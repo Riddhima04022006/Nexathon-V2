@@ -196,7 +196,7 @@
 
   .stats-headline .ghost {
     color: transparent;
-    -webkit-text-stroke: 1.5px rgba(255,255,255,0.68);
+    -webkit-text-stroke: 1px rgba(255,255,255,0.68);
   }
 
   .stats-header-right {
@@ -205,16 +205,16 @@
   }
 
   .stats-header-right p {
-    font-size: 0.88rem;
+    font-size: 1.05rem;
     line-height: 1.8;
     color: var(--muted);
     font-weight: 300;
   }
 
-  /* ── BENTO GRID ── */
+  /* ── UPDATED BENTO GRID (2 ROWS FIXED) ── */
   .bento {
     display: grid;
-    grid-template-columns: repeat(12, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 1px;
     background: var(--border-strong);
     border: 1px solid var(--border-strong);
@@ -222,20 +222,23 @@
 
   .bento-cell {
     background: var(--bg);
-    padding: 52px 44px;
+    padding: 60px 40px; 
     position: relative;
     overflow: hidden;
     transition: background 0.5s ease;
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    min-height: 380px;
   }
 
   .bento-cell::after {
     content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(ellipse at 0% 100%, rgba(255,255,255,0.04) 0%, transparent 65%);
+    background: radial-gradient(circle at center, rgba(255,255,255,0.03) 0%, transparent 70%);
     opacity: 0;
     transition: opacity 0.5s ease;
   }
@@ -243,42 +246,23 @@
   .bento-cell:hover { background: #0f0f0f; }
   .bento-cell:hover::after { opacity: 1; }
 
-  .cell-1 { grid-column: span 7; }
-  .cell-2 { grid-column: span 5; }
-  .cell-3 { grid-column: span 4; }
-  .cell-4 { grid-column: span 4; }
-  .cell-5 { grid-column: span 4; }
-  .cell-6 {
-    grid-column: span 12;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    gap: 40px;
-  }
-
   .stat-val {
     font-family: 'Playfair Display', serif;
     font-weight: 900;
-    line-height: 0.88;
+    line-height: 1;
     color: var(--white);
     letter-spacing: -0.02em;
-    margin-bottom: 18px;
+    margin-bottom: 20px;
+    font-size: clamp(3rem, 5.5vw, 6rem);
   }
 
-  .cell-1 .stat-val { font-size: clamp(3.5rem, 6vw, 6rem); }
-  .cell-2 .stat-val { font-size: clamp(3rem, 5vw, 5rem); }
-  .cell-3 .stat-val,
-  .cell-4 .stat-val,
-  .cell-5 .stat-val { font-size: clamp(2.2rem, 3.5vw, 3.8rem); }
-  .cell-6 .stat-val { font-size: clamp(2.5rem, 4vw, 4.5rem); margin-bottom: 0; }
-
   .stat-lbl {
-    font-size: 0.78rem;
-    letter-spacing: 0.1em;
+    font-size: 1rem;
+    letter-spacing: 0.15em;
     text-transform: uppercase;
     color: var(--muted);
     line-height: 1.5;
-    max-width: 220px;
+    max-width: 200px;
   }
 
   .cell-accent {
@@ -293,25 +277,12 @@
 
   .bento-cell:hover .cell-accent { width: 100%; }
 
-  .cell-6-right {
-    text-align: right;
-    flex-shrink: 0;
-  }
-
-  .cell-6-right .small-tag {
-    font-size: 0.62rem;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: var(--dim);
-    margin-bottom: 8px;
-    display: block;
-  }
-
-  .cell-6-right .tagline {
-    font-family: 'Playfair Display', serif;
-    font-size: 1rem;
-    color: rgba(255,255,255,0.12);
-    letter-spacing: 0.05em;
+  .cell-6-branding {
+    position: absolute;
+    bottom: 30px;
+    width: 100%;
+    text-align: center;
+    opacity: 0.3;
   }
 
   /* ── SPONSORS ── */
@@ -347,7 +318,7 @@
   .sponsors-sub {
     max-width: 260px;
     text-align: right;
-    font-size: 0.82rem;
+    font-size: 1rem;
     line-height: 1.8;
     color: var(--muted);
     font-weight: 300;
@@ -386,7 +357,6 @@
     will-change: transform;
   }
 
-  /* ── SPONSOR CARDS — transparent borders, no grayscale ── */
   .sponsor-card {
     flex-shrink: 0;
     width: 260px;
@@ -417,11 +387,6 @@
     opacity: 1;
     transition: opacity 0.4s ease;
     display: block;
-    /* no grayscale filter */
-  }
-
-  .sponsor-card:hover img {
-    opacity: 1;
   }
 
   .ticker-rule {
@@ -454,11 +419,29 @@
     text-transform: uppercase;
     color: var(--dim);
   }
+
+  @media (max-width: 900px) {
+    .bento { grid-template-columns: 1fr; }
+    #stats, .sponsors-header, #footer { padding: 80px 40px; }
+    .bento-cell { min-height: 280px; }
+  }
+
+  /* ── MOBILE: hide subtitle/description elements ── */
+  @media (max-width: 768px) {
+    .stats-header-right {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .sponsors-sub {
+      opacity: 0;
+      pointer-events: none;
+    }
+  }
 </style>
 </head>
 <body>
 
-<!-- ─── HERO ─── -->
 <section id="hero">
   <div id="trail-container"></div>
   <h1 class="hero-word">NEXATHON</h1>
@@ -469,12 +452,10 @@
   </div>
 </section>
 
-<!-- ─── STATS ─── -->
 <section id="stats">
   <div class="stats-bg-text">N1</div>
 
   <div class="stats-inner">
-
     <div class="stats-header">
       <div>
         <div class="stats-eyebrow">
@@ -488,70 +469,52 @@
         </h2>
       </div>
       <div class="stats-header-right">
-        <p>Edition we wrapped. Real engineers showed up, real numbers followed. Here's what happened.</p>
+        <p>Edition we wrapped. Real engineers showed up, real numbers followed.</p>
       </div>
     </div>
 
     <div class="bento">
-
-      <div class="bento-cell cell-1">
-        <div class="stat-val">
-          <span class="count-up" data-target="800" data-suffix="+">800+</span>
-        </div>
+      <div class="bento-cell">
+        <div class="stat-val"><span class="count-up" data-target="800" data-suffix="+">0</span></div>
         <div class="stat-lbl">Registrations</div>
         <div class="cell-accent"></div>
       </div>
 
-      <div class="bento-cell cell-2">
-        <div class="stat-val">
-          <span class="count-up" data-target="20000" data-suffix="+" data-comma="true">20,000+</span>
-        </div>
+      <div class="bento-cell">
+        <div class="stat-val"><span class="count-up" data-target="20000" data-suffix="+" data-comma="true">0</span></div>
         <div class="stat-lbl">Impressions across platforms</div>
         <div class="cell-accent"></div>
       </div>
 
-      <div class="bento-cell cell-3">
-        <div class="stat-val">
-          &#8377;<span class="count-up" data-target="32.5" data-suffix="L+" data-dec="1">32.5L+</span>
-        </div>
+      <div class="bento-cell">
+        <div class="stat-val">&#8377;<span class="count-up" data-target="32.5" data-suffix="L" data-dec="1">0</span></div>
         <div class="stat-lbl">Total partner ecosystem value</div>
         <div class="cell-accent"></div>
       </div>
 
-      <div class="bento-cell cell-4">
-        <div class="stat-val">
-          &#8377;<span class="count-up" data-target="25" data-suffix="L+">25L+</span>
-        </div>
+      <div class="bento-cell">
+        <div class="stat-val">&#8377;<span class="count-up" data-target="25" data-suffix="L+">0</span></div>
         <div class="stat-lbl">In-kind partnerships</div>
         <div class="cell-accent"></div>
       </div>
 
-      <div class="bento-cell cell-5">
-        <div class="stat-val">
-          &#8377;<span class="count-up" data-target="5" data-suffix="L">5L</span>
-        </div>
+      <div class="bento-cell">
+        <div class="stat-val">&#8377;<span class="count-up" data-target="5" data-suffix="L">0</span></div>
         <div class="stat-lbl">In-cash bonus</div>
         <div class="cell-accent"></div>
       </div>
 
-      <div class="bento-cell cell-6">
-        <div class="stat-val">
-          &#8377;<span class="count-up" data-target="2.5" data-suffix="L" data-dec="1">2.5L</span>
-        </div>
+      <div class="bento-cell">
+        <div class="stat-val">&#8377;<span class="count-up" data-target="2.5" data-suffix="L+" data-dec="1">0</span></div>
         <div class="stat-lbl">Direct cash funding</div>
         <div class="cell-accent"></div>
-        <div class="cell-6-right">
-          <span class="small-tag">Nexathon &mdash; Version 1</span>
-          <span class="tagline">Prove You Code.</span>
+        <div class="cell-6-branding">
         </div>
       </div>
-
     </div>
-
   </div>
 </section>
 
-<!-- ─── SPONSORS ─── -->
 <section id="sponsors">
   <div class="sponsors-header">
     <div>
@@ -565,49 +528,39 @@
         &amp; sponsors.
       </h2>
     </div>
-    <p class="sponsors-sub">The brands and platforms that made Edition I possible.</p>
+    <p class="sponsors-sub">The brands and platforms that made Edition 1 possible.</p>
   </div>
 
   <div class="ticker-rule"></div>
-
-  <!-- Single ticker row scrolling left -->
   <div class="ticker-outer">
     <div class="ticker-track" id="ticker-1">
-      <div class="sponsor-card"><img src="./src/assets/appwrite.svg"      alt="Appwrite"></div>
-      <div class="sponsor-card"><img src="./src/assets/codecrafter.webp"  alt="CodeCrafter"></div>
-      <div class="sponsor-card"><img src="./src/assets/fft.png"           alt="FFT"></div>
-      <div class="sponsor-card"><img src="./src/assets/fx-header.png"     alt="FX"></div>
-      <div class="sponsor-card"><img src="./src/assets/sprintlogo.png"    alt="Sprint"></div>
-      <div class="sponsor-card"><img src="./src/assets/xyz.svg"           alt="XYZ"></div>
+      <div class="sponsor-card"><img src="./src/assets/appwrite.svg" alt="Appwrite"></div>
+      <div class="sponsor-card"><img src="./src/assets/codecrafter.webp" alt="CodeCrafter"></div>
+      <div class="sponsor-card"><img src="./src/assets/fft.png" alt="FFT"></div>
+      <div class="sponsor-card"><img src="./src/assets/fx-header.png" alt="FX"></div>
+      <div class="sponsor-card"><img src="./src/assets/sprintlogo.png" alt="Sprint"></div>
+      <div class="sponsor-card"><img src="./src/assets/xyz.svg" alt="XYZ"></div>
     </div>
   </div>
-
-  <div style="height:1px; background: var(--border-strong);"></div>
 </section>
 
-<!-- ─── FOOTER ─── -->
 <footer id="footer">
   <span class="footer-brand">Nexathon</span>
   <span class="footer-tag">Edition I &mdash; Flashback</span>
 </footer>
 
-
 <script>
+  // Cursor Trail
   const imageUrls = [
     'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=500&q=70',
     'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=500&q=70',
-    'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=500&q=70',
-    'https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?w=500&q=70',
-    'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=500&q=70',
-    'https://images.unsplash.com/photo-1531482615713-2afd69097998?w=500&q=70',
-    'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=500&q=70',
-    'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=500&q=70',
+    'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=500&q=70'
   ];
 
   let trailIdx = 0;
   let lastMouse = { x: -999, y: -999 };
   const trailEl = document.getElementById('trail-container');
-  const heroEl  = document.getElementById('hero');
+  const heroEl = document.getElementById('hero');
 
   heroEl.addEventListener('mousemove', (e) => {
     const rect = heroEl.getBoundingClientRect();
@@ -615,44 +568,31 @@
     const y = e.clientY - rect.top;
     if (Math.hypot(x - lastMouse.x, y - lastMouse.y) < 160) return;
     lastMouse = { x, y };
-
     const div = document.createElement('div');
     div.className = 'trail-img';
     div.style.backgroundImage = `url(${imageUrls[trailIdx % imageUrls.length]})`;
     div.style.left = (x - 120) + 'px';
-    div.style.top  = (y - 105) + 'px';
+    div.style.top = (y - 105) + 'px';
     trailIdx++;
     trailEl.appendChild(div);
-
-    gsap.fromTo(div,
-      { opacity: 0, scale: 0.82 },
-      {
-        opacity: 1, scale: 1, duration: 0.28, ease: 'power2.out',
-        onComplete() {
-          gsap.to(div, {
-            opacity: 0, scale: 0.72, duration: 0.75, delay: 0.35,
-            ease: 'power2.in', onComplete: () => div.remove()
-          });
-        }
+    gsap.fromTo(div, { opacity: 0, scale: 0.82 }, {
+      opacity: 1, scale: 1, duration: 0.28, ease: 'power2.out',
+      onComplete() {
+        gsap.to(div, { opacity: 0, scale: 0.72, duration: 0.75, delay: 0.35, ease: 'power2.in', onComplete: () => div.remove() });
       }
-    );
+    });
   });
-</script>
 
-<script>
+  // GSAP Count-up
   gsap.registerPlugin(ScrollTrigger);
-
   function animateCount(el) {
     const target = parseFloat(el.dataset.target);
     const suffix = el.dataset.suffix || '';
-    const dec    = parseInt(el.dataset.dec) || 0;
-    const comma  = el.dataset.comma === 'true';
-    const obj    = { val: 0 };
-
+    const dec = parseInt(el.dataset.dec) || 0;
+    const comma = el.dataset.comma === 'true';
+    const obj = { val: 0 };
     gsap.to(obj, {
-      val: target,
-      duration: 2,
-      ease: 'power3.out',
+      val: target, duration: 2, ease: 'power3.out',
       onUpdate() {
         let v = dec ? obj.val.toFixed(dec) : Math.floor(obj.val);
         if (comma) v = Number(v).toLocaleString('en-IN');
@@ -662,109 +602,33 @@
   }
 
   gsap.set('.bento-cell', { opacity: 0, y: 28 });
-
   ScrollTrigger.create({
-    trigger: '#stats',
-    start: 'top 70%',
-    once: true,
+    trigger: '#stats', start: 'top 70%', once: true,
     onEnter() {
       gsap.to('.bento-cell', {
-        opacity: 1, y: 0,
-        duration: 0.9,
-        ease: 'power3.out',
-        stagger: { amount: 0.55, from: 'start' },
-        onStart() {
-          document.querySelectorAll('.count-up').forEach(animateCount);
-        }
+        opacity: 1, y: 0, duration: 0.9, ease: 'power3.out', stagger: 0.1,
+        onStart() { document.querySelectorAll('.count-up').forEach(animateCount); }
       });
     }
   });
 
-  gsap.set('.stats-header', { opacity: 0, y: 40 });
-  ScrollTrigger.create({
-    trigger: '.stats-header',
-    start: 'top 80%',
-    once: true,
-    onEnter() {
-      gsap.to('.stats-header', { opacity: 1, y: 0, duration: 1, ease: 'power3.out' });
-    }
-  });
-
-  gsap.from('.hero-word', {
-    scale: 0.94, opacity: 0, duration: 1.4,
-    ease: 'expo.out', delay: 0.1
-  });
-  gsap.from('.hero-edition', {
-    opacity: 0, y: 10, duration: 1,
-    ease: 'power2.out', delay: 0.6
-  });
-  gsap.from('.hero-scroll-hint', {
-    opacity: 0, duration: 1,
-    ease: 'power2.out', delay: 1
-  });
-
-  gsap.to('.scroll-line', {
-    scaleY: 0.3,
-    transformOrigin: 'top center',
-    repeat: -1, yoyo: true,
-    duration: 1.2, ease: 'sine.inOut'
-  });
-</script>
-
-<script>
-  /* ─── Single infinite ticker ─── */
-  function setupTicker(trackId, direction) {
+  // Ticker
+  function setupTicker(trackId) {
     const track = document.getElementById(trackId);
     if (!track) return;
-
     const originals = Array.from(track.children);
     originals.forEach(child => track.appendChild(child.cloneNode(true)));
-
     const totalWidth = track.scrollWidth / 2;
-    const speed = 0.035;
-
-    let x = direction === 'right' ? -totalWidth : 0;
-    let lastTime = null;
-    let paused = false;
-
-    track.parentElement.addEventListener('mouseenter', () => { paused = true; });
-    track.parentElement.addEventListener('mouseleave', () => { paused = false; });
-
-    function tick(ts) {
-      if (!lastTime) lastTime = ts;
-      const delta = ts - lastTime;
-      lastTime = ts;
-
-      if (!paused) {
-        if (direction === 'left') {
-          x -= speed * delta;
-          if (x <= -totalWidth) x += totalWidth;
-        } else {
-          x += speed * delta;
-          if (x >= 0) x -= totalWidth;
-        }
-        track.style.transform = `translateX(${x}px)`;
-      }
-
+    let x = 0;
+    function tick() {
+      x -= 0.8;
+      if (x <= -totalWidth) x = 0;
+      track.style.transform = `translateX(${x}px)`;
       requestAnimationFrame(tick);
     }
-
-    requestAnimationFrame(tick);
+    tick();
   }
-
-  gsap.set('#sponsors .sponsors-header', { opacity: 0, y: 36 });
-  ScrollTrigger.create({
-    trigger: '#sponsors',
-    start: 'top 75%',
-    once: true,
-    onEnter() {
-      gsap.to('#sponsors .sponsors-header', {
-        opacity: 1, y: 0, duration: 1, ease: 'power3.out'
-      });
-      setupTicker('ticker-1', 'left');
-    }
-  });
+  setupTicker('ticker-1');
 </script>
-
 </body>
 </html>
