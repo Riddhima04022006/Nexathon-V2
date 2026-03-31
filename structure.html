@@ -343,7 +343,7 @@
   .round-title { font-family: 'Playfair Display', serif; font-size: clamp(1.9rem, 3vw, 2.5rem); font-weight: 700; line-height: 1.1; color: var(--muted); transition: color 0.4s ease, font-size 0.4s ease; margin-bottom: 8px; }
   .round-card-pinned.active .round-title { color: var(--white); font-size: clamp(1.8rem, 4vw, 3.2rem); }
   
-  .round-content-wrapper { height: 0; overflow: hidden; opacity: 0; }
+  .round-content-wrapper { max-height: 0; overflow: hidden; opacity: 0; }
   .round-subtitle { font-size: 1rem; font-weight: 300; font-style: italic; color: var(--muted); margin: 10px 0 20px; }
   .round-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
   .round-list li { display: flex; align-items: baseline; gap: 12px; font-size: 0.95rem; color: var(--muted); line-height: 1.5; }
@@ -399,7 +399,7 @@
     top: 19px;
     left: 20px;
     width: 0%;
-    height: 2px;
+    height: 0%; /* ✅ ADD THIS */
     background: var(--white);
     box-shadow: 0 0 15px rgba(255,255,255,0.6);
     z-index: 1;
@@ -612,6 +612,9 @@
   camera.position.y = 1;
 
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1;
   renderer.setSize(canvasContainer.clientWidth, canvasContainer.clientHeight);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   canvasContainer.appendChild(renderer.domElement);
@@ -645,7 +648,8 @@
       scene.add(falcon);
       canvasContainer.style.opacity = "1";
 
-      ScrollTrigger.refresh();
+      addFalconTweens();
+      ScrollTrigger.refresh(true);
     },
     undefined,
     (err) => {
@@ -659,8 +663,18 @@
     renderer.render(scene, camera);
   }
   animate();
- 
-  initScrollAnimations();
+  ScrollTrigger.addEventListener("refresh", () => {
+    renderer.render(scene, camera);
+  });
+
+  ScrollTrigger.addEventListener("refreshInit", () => {
+    if (falcon) {
+      falcon.rotation.y = falcon.rotation.y % (Math.PI * 2);
+    }
+  });
+  window.addEventListener("load", () => {
+    initScrollAnimations();
+  });
 
   function initScrollAnimations() {
     gsap.set(".seeking", { x: isMobile ? -200 : -500, opacity: 0 });
@@ -677,7 +691,25 @@
     });
     gsap.set(".content-reveal", { visibility: "visible", opacity: 0, y: 40 });
     gsap.set(".reveal-item", { y: 20, opacity: 0 });
+    function openContent(id) {
+      const el = document.querySelector(id);
+      return gsap.to(el, {
+        maxHeight: () => el.scrollHeight,
+        opacity: 1,
+        duration: 0.6,
+        ease: "power2.out"
+      });
+    }
 
+    function closeContent(id) {
+      const el = document.querySelector(id);
+      return gsap.to(el, {
+        maxHeight: 0,
+        opacity: 0,
+        duration: 0.6,
+        ease: "power2.inOut"
+      });
+    }
     const purposeTL = gsap.timeline({
       scrollTrigger: {
         trigger: "#purpose",
@@ -715,20 +747,29 @@
     });
     
     gsap.set("#card-1", { className: "round-card-pinned active" });
-    gsap.set("#content-1", { height: "auto", opacity: 1 });
+    const c1 = document.querySelector("#content-1");
+    gsap.set(c1, { maxHeight: () => c1.scrollHeight, opacity: 1 });
 
     roundsTL
-      .to({}, { duration: 0.5 })                                      
-      .to("#content-1", { height: 0, opacity: 0, duration: 0.6 })
-      .to("#card-1", { className: "round-card-pinned", duration: 0.1 }, "<")
-      .to("#card-2", { className: "round-card-pinned active", duration: 0.1 }, "<")
-      .to("#content-2", { height: "auto", opacity: 1, duration: 0.6 }, "<")
-      .to({}, { duration: 0.5 })                                         
-      .to("#content-2", { height: 0, opacity: 0, duration: 0.6 })
-      .to("#card-2", { className: "round-card-pinned", duration: 0.1 }, "<")
-      .to("#card-3", { className: "round-card-pinned active", duration: 0.1 }, "<")
-      .to("#content-3", { height: "auto", opacity: 1, duration: 0.6 }, "<")
-      .to({}, { duration: 0.5 });                                       
+      .to({}, { duration: 0.5 })
+
+      .add(() => closeContent("#content-1"))
+      .add(() => {
+        document.querySelector("#card-1").classList.remove("active");
+        document.querySelector("#card-2").classList.add("active");
+      }, "<")
+      .add(() => openContent("#content-2"), ">-0.2")
+
+      .to({}, { duration: 0.5 })
+
+      .add(() => closeContent("#content-2"))
+      .add(() => {
+        document.querySelector("#card-2").classList.remove("active");
+        document.querySelector("#card-3").classList.add("active");
+      }, "<")
+      .add(() => openContent("#content-3"), ">-0.2")
+
+      .to({}, { duration: 0.5 });                             
     const progressProp = isMobile ? "height" : "width";
     const nodeOn = {
       backgroundColor: "#fff",
@@ -737,7 +778,10 @@
       scale: 1.1
     };
     const labelOn = { color: "#fff", fontWeight: "500" };
-
+    gsap.set(".tl-progress-line", {
+      width: isMobile ? "2px" : "0%",
+      height: isMobile ? "0%" : "2px"
+    });
     const timelineTL = gsap.timeline({
       scrollTrigger: { 
         trigger: "#timeline", 
@@ -770,6 +814,11 @@
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
     renderer.setSize(width, height);
+    document.querySelectorAll(".round-content-wrapper").forEach(el => {
+      if (el.style.maxHeight !== "0px") {
+        el.style.maxHeight = el.scrollHeight + "px";
+      }
+    });
     ScrollTrigger.refresh();
   });
 
@@ -784,15 +833,6 @@
   window._addFalconTweens = addFalconTweens;
 </script>
 
-<script type="module">
-  const poll = setInterval(() => {
-    if (window._addFalconTweens && document.querySelector('#canvas-container canvas')) {
-      if (window._purposeTL) {
-        clearInterval(poll);
-      }
-    }
-  }, 200);
-</script>
 
 </body>
 </html>
